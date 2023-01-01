@@ -9,10 +9,12 @@ import {
 import { useEffect, useState } from 'react'
 import { RoomDialog } from '../../components'
 import { getRooms } from '../../client/axiosClient'
+import { InputSearch } from '../../components/InputSearch'
 
 export const HomePage = () => {
   const { palette } = useTheme()
   const [rooms, setRooms] = useState([])
+  const [roomsToShow, setRoomsToShow] = useState([])
   const [isOpenDialog, setIsOpenDialog] = useState(false)
   const [selectedRoom, setSelectedRoom] = useState(null)
 
@@ -22,6 +24,7 @@ export const HomePage = () => {
 
   const fetchRooms = async () => {
     const { rooms } = await getRooms()
+    setRoomsToShow(rooms)
     setRooms(rooms)
   }
 
@@ -32,24 +35,30 @@ export const HomePage = () => {
 
   return (
     <div>
-      <Typography
-        variant="h1"
-        mt={3}
-        align="center"
-        color={palette.primary.main}
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'flex-end',
+        }}
       >
-        Room List
-      </Typography>
-      {rooms.length !== 0 ? (
+        <Typography variant="h1" mt={3} mr={5} color={palette.primary.main}>
+          Room List
+        </Typography>
+        <InputSearch rooms={rooms} setRoomsToShow={setRoomsToShow} />
+      </div>
+      {roomsToShow.length !== 0 ? (
         <List
           sx={{
             margin: '5%',
             backgroundColor: palette.background.alt,
             color: palette.neutral.dark,
             borderRadius: '5px',
+            maxHeight: '450px',
+            overflow: 'auto',
           }}
         >
-          {rooms.map(room => (
+          {roomsToShow.map(room => (
             <ListItem
               key={room._id}
               disablePadding

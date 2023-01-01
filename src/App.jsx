@@ -2,20 +2,19 @@ import { BrowserRouter } from 'react-router-dom'
 import { CssBaseline, ThemeProvider } from '@mui/material'
 import { themeSettings } from './theme'
 import { createTheme } from '@mui/material/styles'
-import { useMemo } from 'react'
+import { useContext, useMemo } from 'react'
 import { AppRouter } from './router/AppRouter'
-import { AuthProvider } from './auth/context'
+import { AuthContext, AuthProvider } from './auth/context'
 
 function App() {
-  const mode = 'dark'
+  const { mode } = useContext(AuthContext)
+  //const mode = 'dark'
   const theme = useMemo(() => createTheme(themeSettings(mode)), [mode])
   return (
     <BrowserRouter>
       <ThemeProvider theme={theme}>
         <CssBaseline />
-        <AuthProvider>
-          <AppRouter />
-        </AuthProvider>
+        <AppRouter />
       </ThemeProvider>
     </BrowserRouter>
   )

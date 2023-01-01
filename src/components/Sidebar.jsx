@@ -13,6 +13,7 @@ import LogoutIcon from '@mui/icons-material/Logout'
 import { useNavigate } from 'react-router-dom'
 import { useContext } from 'react'
 import { AuthContext } from '../auth/context'
+import { SwitchMode } from './SwitchMode'
 
 export const Sidebar = () => {
   const { palette } = useTheme()
@@ -51,6 +52,7 @@ export const Sidebar = () => {
         color: palette.primary.main,
       }}
     >
+      <SwitchMode />
       <List>
         {sections.map(section => (
           <ListItem

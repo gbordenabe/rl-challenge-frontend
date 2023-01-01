@@ -38,8 +38,6 @@ export const AppRouter = () => {
                       path="create-student"
                       element={<CreateStudentPage />}
                     />
-                    {/*<Route path="student-page/:id" element={<StudentPage />} />
-                    <Route path="edit-room/:id" element={<EditRoomPage />} /> */}
                     <Route path="/" element={<Navigate to="/home" />} />
                   </Routes>
                 </Grid>

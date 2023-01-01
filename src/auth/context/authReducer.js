@@ -17,6 +17,7 @@ export const authReducer = (state = {}, action) => {
 
     case types.setMode:
       return {
+        ...state,
         mode: action.payload,
       }
 

@@ -6,7 +6,8 @@ import { types } from '../types'
 const init = () => {
   const user = JSON.parse(localStorage.getItem('user'))
   const token = JSON.parse(localStorage.getItem('token'))
-  const mode = JSON.parse(localStorage.getItem('dark'))
+  const mode = localStorage.getItem('mode')
+  if (!mode) localStorage.setItem('mode', 'dark')
 
   return {
     logged: !!user,
@@ -35,12 +36,18 @@ export const AuthProvider = ({ children }) => {
     dispatch(action)
   }
 
-  const setMode = (mode = 'light') => {
-    localStorage.getItem('mode')
-    mode === 'light'
-      ? localStorage.setItem('mode', 'dark')
-      : localStorage.setItem('mode', 'light')
-    const action = { type: types.setMode }
+  const setMode = () => {
+    const prevMode = localStorage.getItem('mode')
+    let newMode = ''
+    if (prevMode === 'dark') {
+      localStorage.setItem('mode', 'light')
+      newMode = 'light'
+    } else {
+      localStorage.setItem('mode', 'dark')
+      newMode = 'dark'
+    }
+
+    const action = { type: types.setMode, payload: newMode }
     dispatch(action)
   }
 
