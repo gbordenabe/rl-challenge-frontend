@@ -43,7 +43,6 @@ export const EditUserPage = () => {
         values.rooms = [...checked]
         values.siblings = []
         await updateStudent(id, values, token)
-        console.log(values)
         alert('Student updated successfully')
       } catch (error) {
         console.log(error)
