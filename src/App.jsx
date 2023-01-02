@@ -8,7 +8,6 @@ import { AuthContext, AuthProvider } from './auth/context'
 
 function App() {
   const { mode } = useContext(AuthContext)
-  //const mode = 'dark'
   const theme = useMemo(() => createTheme(themeSettings(mode)), [mode])
   return (
     <BrowserRouter>
