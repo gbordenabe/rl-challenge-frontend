@@ -94,20 +94,22 @@ export const UserDetailsPage = () => {
                   : 'There is not siblings'}
               </Typography>
             </div>
-            <div style={styles.constainer}>
-              <Button
-                variant="contained"
-                onClick={handleClickEdit}
-                sx={{
-                  backgroundColor: palette.primary.main,
-                  color: palette.primary.light,
-                  marginTop: 5,
-                  alignSelf: 'center',
-                }}
-              >
-                Edit user
-              </Button>
-            </div>
+            {
+              <div style={styles.constainer}>
+                <Button
+                  variant="contained"
+                  onClick={handleClickEdit}
+                  sx={{
+                    backgroundColor: palette.primary.main,
+                    color: palette.primary.light,
+                    marginTop: 5,
+                    alignSelf: 'center',
+                  }}
+                >
+                  Edit user
+                </Button>
+              </div>
+            }
           </div>
         </div>
       )}

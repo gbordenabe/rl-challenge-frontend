@@ -3,9 +3,15 @@ import { useFormik } from 'formik'
 import { useContext, useEffect, useState } from 'react'
 import * as yup from 'yup'
 import { AuthContext } from '../../auth/context'
-import { getRoomById, getUsers, updateRoom } from '../../client/axiosClient'
+import {
+  deleteRoom,
+  deleteUser,
+  getRoomById,
+  getUsers,
+  updateRoom,
+} from '../../client/axiosClient'
 import { MembersList } from '../../components/MembersList'
-import { useParams } from 'react-router-dom'
+import { Navigate, useNavigate, useParams } from 'react-router-dom'
 
 export const EditRoomPage = () => {
   const { id } = useParams()
@@ -13,6 +19,7 @@ export const EditRoomPage = () => {
   const { palette } = useTheme()
   const [checked, setChecked] = useState([])
   const [users, setUsers] = useState([])
+  const navigate = useNavigate()
 
   useEffect(() => {
     getUsersAndRoomEffect()
@@ -52,79 +59,102 @@ export const EditRoomPage = () => {
     }),
   })
 
+  const handleDelete = async () => {
+    await deleteUser(id, token)
+    alert('User deleted successfully')
+    navigate('/home')
+  }
+
   return (
     <div>
-      <Typography
-        variant="h1"
-        mt={3}
-        align="center"
-        color={palette.primary.main}
-      >
-        Edit Room
-      </Typography>
-
-      <div
-        style={{
-          margin: '20px 50px',
-          backgroundColor: palette.background.alt,
-          color: palette.neutral.dark,
-          borderRadius: '5px',
-          padding: '30px',
-        }}
-      >
-        <form onSubmit={formik.handleSubmit}>
-          <TextField
-            type="number"
-            label="Number"
-            fullWidth
-            sx={{
-              marginBottom: '10px',
-            }}
-            onChange={formik.handleChange}
-            onBlur={formik.handleBlur}
-            value={formik.values.number}
-            name="number"
-            id="number"
-            error={Boolean(formik.errors.number)}
-          />
-          <TextField
-            label="Name"
-            fullWidth
-            onChange={formik.handleChange}
-            onBlur={formik.handleBlur}
-            value={formik.values.name}
-            name="name"
-            id="name"
-            error={Boolean(formik.errors.name)}
-          />
+      {users && (
+        <div>
           <Typography
+            variant="h1"
+            mt={3}
             align="center"
-            sx={{
-              marginTop: '20px',
-            }}
+            color={palette.primary.main}
           >
-            Members
+            Edit Room
           </Typography>
-          <MembersList
-            checked={checked}
-            setChecked={setChecked}
-            users={users}
-          />
-          <Button
-            type="submit"
-            variant="contained"
-            sx={{
-              marginTop: '20px',
-              fontSize: '15px',
-              backgroundColor: palette.primary.main,
-              color: palette.background.default,
+
+          <div
+            style={{
+              margin: '20px 50px',
+              backgroundColor: palette.background.alt,
+              color: palette.neutral.dark,
+              borderRadius: '5px',
+              padding: '30px',
             }}
-            fullWidth
           >
-            SAVE
-          </Button>
-        </form>
-      </div>
+            <form onSubmit={formik.handleSubmit}>
+              <TextField
+                type="number"
+                label="Number"
+                fullWidth
+                sx={{
+                  marginBottom: '10px',
+                }}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                value={formik.values.number}
+                name="number"
+                id="number"
+                error={Boolean(formik.errors.number)}
+              />
+              <TextField
+                label="Name"
+                fullWidth
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                value={formik.values.name}
+                name="name"
+                id="name"
+                error={Boolean(formik.errors.name)}
+              />
+              <Typography
+                align="center"
+                sx={{
+                  marginTop: '20px',
+                }}
+              >
+                Members
+              </Typography>
+              <MembersList
+                checked={checked}
+                setChecked={setChecked}
+                users={users}
+              />
+              <Button
+                type="submit"
+                variant="contained"
+                sx={{
+                  marginTop: '20px',
+                  fontSize: '15px',
+                  backgroundColor: palette.primary.main,
+                  color: palette.background.default,
+                }}
+                fullWidth
+              >
+                SAVE
+              </Button>
+              <Button
+                variant="contained"
+                sx={{
+                  marginTop: '20px',
+                  fontSize: '15px',
+                  backgroundColor: palette.primary.main,
+                  color: palette.background.default,
+                }}
+                fullWidth
+                onClick={handleDelete}
+              >
+                DELETE ROOM
+              </Button>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

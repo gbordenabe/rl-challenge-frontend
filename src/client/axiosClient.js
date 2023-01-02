@@ -87,3 +87,19 @@ export const getRoomById = async roomId => {
   )
   return data
 }
+
+export const deleteRoom = async (roomId, token) => {
+  await axios.delete(`${import.meta.env.VITE_BACK_URL}api/rooms/${roomId}`, {
+    headers: {
+      'x-token': token,
+    },
+  })
+}
+
+export const deleteUser = async (userId, token) => {
+  await axios.delete(`${import.meta.env.VITE_BACK_URL}api/users/${userId}`, {
+    headers: {
+      'x-token': token,
+    },
+  })
+}

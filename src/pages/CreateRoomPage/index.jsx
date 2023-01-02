@@ -51,77 +51,81 @@ export const CreateRoomPage = () => {
 
   return (
     <div>
-      <Typography
-        variant="h1"
-        mt={3}
-        align="center"
-        color={palette.primary.main}
-      >
-        Create Room
-      </Typography>
-
-      <div
-        style={{
-          margin: '20px 50px',
-          backgroundColor: palette.background.alt,
-          color: palette.neutral.dark,
-          borderRadius: '5px',
-          padding: '30px',
-        }}
-      >
-        <form onSubmit={formik.handleSubmit}>
-          <TextField
-            type="number"
-            label="Number"
-            fullWidth
-            sx={{
-              marginBottom: '10px',
-            }}
-            onChange={formik.handleChange}
-            onBlur={formik.handleBlur}
-            value={formik.values.number}
-            name="number"
-            id="number"
-            error={Boolean(formik.errors.number)}
-          />
-          <TextField
-            label="Name"
-            fullWidth
-            onChange={formik.handleChange}
-            onBlur={formik.handleBlur}
-            value={formik.values.name}
-            name="name"
-            id="name"
-            error={Boolean(formik.errors.name)}
-          />
+      {users && (
+        <div>
           <Typography
+            variant="h1"
+            mt={3}
             align="center"
-            sx={{
-              marginTop: '20px',
-            }}
+            color={palette.primary.main}
           >
-            Members
+            Create Room
           </Typography>
-          <MembersList
-            checked={checked}
-            setChecked={setChecked}
-            users={users}
-          />
-          <Button
-            type="submit"
-            variant="contained"
-            sx={{
-              marginTop: '20px',
-              fontSize: '15px',
-              backgroundColor: palette.primary.main,
-              color: palette.background.default,
+
+          <div
+            style={{
+              margin: '20px 50px',
+              backgroundColor: palette.background.alt,
+              color: palette.neutral.dark,
+              borderRadius: '5px',
+              padding: '30px',
             }}
-            fullWidth
           >
-            Create
-          </Button>
-        </form>
-      </div>
+            <form onSubmit={formik.handleSubmit}>
+              <TextField
+                type="number"
+                label="Number"
+                fullWidth
+                sx={{
+                  marginBottom: '10px',
+                }}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                value={formik.values.number}
+                name="number"
+                id="number"
+                error={Boolean(formik.errors.number)}
+              />
+              <TextField
+                label="Name"
+                fullWidth
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                value={formik.values.name}
+                name="name"
+                id="name"
+                error={Boolean(formik.errors.name)}
+              />
+              <Typography
+                align="center"
+                sx={{
+                  marginTop: '20px',
+                }}
+              >
+                Members
+              </Typography>
+              <MembersList
+                checked={checked}
+                setChecked={setChecked}
+                users={users}
+              />
+              <Button
+                type="submit"
+                variant="contained"
+                sx={{
+                  marginTop: '20px',
+                  fontSize: '15px',
+                  backgroundColor: palette.primary.main,
+                  color: palette.background.default,
+                }}
+                fullWidth
+              >
+                Create
+              </Button>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

@@ -50,7 +50,10 @@ export const RoomDialog = ({ isOpen, setIsOpenDialog, room }) => {
                       color: palette.neutral.light,
                       backgroundColor: palette.neutral.main,
                     }}
-                    onClick={() => navigate(`/user-details/${student._id}`)}
+                    onClick={() => {
+                      user.role === 'TEACHER_ROLE' &&
+                        navigate(`/user-details/${student._id}`)
+                    }}
                   />
                 ))
               : 'This room is empty'}
