@@ -20,6 +20,8 @@ export const createRoom = async (room, token) => {
 }
 
 export const createStudent = async (student, token) => {
+  if (student.rooms.length === 0) delete student.rooms
+  if (student.siblings.length === 0) delete student.siblings
   const { data } = await axios.post(
     `${import.meta.env.VITE_BACK_URL}api/users`,
     student,

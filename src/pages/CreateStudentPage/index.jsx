@@ -1,16 +1,19 @@
-import { Button, TextField, Typography, useTheme } from '@mui/material'
+import { Button, Grid, TextField, Typography, useTheme } from '@mui/material'
 import { useFormik } from 'formik'
 import { useContext, useEffect, useState } from 'react'
 import * as yup from 'yup'
 import { AuthContext } from '../../auth/context'
-import { createStudent, getRooms } from '../../client/axiosClient'
+import { createStudent, getRooms, getUsers } from '../../client/axiosClient'
+import { MembersList } from '../../components/MembersList'
 import { RoomsList } from '../../components/RoomsList'
 
 export const CreateStudentPage = () => {
   const { token } = useContext(AuthContext)
   const { palette } = useTheme()
   const [checked, setChecked] = useState([])
+  const [checkedSiblings, setCheckedSiblings] = useState([])
   const [rooms, setRooms] = useState([])
+  const [users, setUsers] = useState([])
 
   useEffect(() => {
     getRoomsEffect()
@@ -18,8 +21,9 @@ export const CreateStudentPage = () => {
 
   const getRoomsEffect = async () => {
     try {
-      const { rooms } = await getRooms()
-      setRooms(rooms)
+      const responses = await Promise.all([getRooms(), getUsers()])
+      setRooms(responses[0].rooms)
+      setUsers(responses[1].users)
     } catch (error) {
       console.log(error)
     }
@@ -35,9 +39,12 @@ export const CreateStudentPage = () => {
     onSubmit: async values => {
       try {
         values.rooms = [...checked]
+        values.siblings = [...checkedSiblings]
+        console.log(values)
         await createStudent(values, token)
         alert('Student created')
         setChecked([])
+        setCheckedSiblings([])
         formik.resetForm()
       } catch (error) {
         console.log(error)
@@ -111,15 +118,38 @@ export const CreateStudentPage = () => {
             id="password"
             error={Boolean(formik.errors.password)}
           />
-          <Typography
-            align="center"
-            sx={{
-              marginTop: '10px',
-            }}
-          >
-            Rooms
-          </Typography>
-          <RoomsList checked={checked} setChecked={setChecked} rooms={rooms} />
+          <Grid container>
+            <Grid item xs={6}>
+              <Typography
+                align="center"
+                sx={{
+                  marginTop: '10px',
+                }}
+              >
+                Rooms
+              </Typography>
+              <RoomsList
+                checked={checked}
+                setChecked={setChecked}
+                rooms={rooms}
+              />
+            </Grid>
+            <Grid item xs={6}>
+              <Typography
+                align="center"
+                sx={{
+                  marginTop: '10px',
+                }}
+              >
+                Siblings
+              </Typography>
+              <MembersList
+                checked={checkedSiblings}
+                setChecked={setCheckedSiblings}
+                users={users}
+              />
+            </Grid>
+          </Grid>
           <Button
             type="submit"
             variant="contained"

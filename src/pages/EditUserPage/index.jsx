@@ -1,11 +1,17 @@
-import { Button, TextField, Typography, useTheme } from '@mui/material'
+import { Button, Grid, TextField, Typography, useTheme } from '@mui/material'
 import { useFormik } from 'formik'
 import { useContext, useEffect, useState } from 'react'
 import * as yup from 'yup'
 import { AuthContext } from '../../auth/context'
-import { getUserById, getRooms, updateStudent } from '../../client/axiosClient'
+import {
+  getUserById,
+  getRooms,
+  updateStudent,
+  getUsers,
+} from '../../client/axiosClient'
 import { RoomsList } from '../../components/RoomsList'
 import { useParams } from 'react-router-dom'
+import { MembersList } from '../../components/MembersList'
 
 export const EditUserPage = () => {
   const { token } = useContext(AuthContext)
@@ -13,6 +19,8 @@ export const EditUserPage = () => {
   const [checked, setChecked] = useState([])
   const [rooms, setRooms] = useState([])
   const { id } = useParams()
+  const [checkedSiblings, setCheckedSiblings] = useState([])
+  const [users, setUsers] = useState([])
 
   useEffect(() => {
     getRoomsEffect()
@@ -20,12 +28,18 @@ export const EditUserPage = () => {
 
   const getRoomsEffect = async () => {
     try {
-      const responses = await Promise.all([getRooms(), getUserById(id)])
+      const responses = await Promise.all([
+        getRooms(),
+        getUserById(id),
+        getUsers(),
+      ])
       formik.setFieldValue('name', responses[1].name)
       formik.setFieldValue('email', responses[1].email)
       formik.setFieldValue('role', responses[1].role)
       setChecked(responses[1].rooms.map(room => room._id))
       setRooms(responses[0].rooms)
+      setUsers(responses[2].users)
+      setCheckedSiblings(responses[1].siblings.map(user => user._id))
     } catch (error) {
       console.log(error)
     }
@@ -41,7 +55,7 @@ export const EditUserPage = () => {
     onSubmit: async values => {
       try {
         values.rooms = [...checked]
-        values.siblings = []
+        values.siblings = [...checkedSiblings]
         await updateStudent(id, values, token)
         alert('Student updated successfully')
       } catch (error) {
@@ -116,15 +130,38 @@ export const EditUserPage = () => {
             id="password"
             error={Boolean(formik.errors.password)}
           />
-          <Typography
-            align="center"
-            sx={{
-              marginTop: '10px',
-            }}
-          >
-            Rooms
-          </Typography>
-          <RoomsList checked={checked} setChecked={setChecked} rooms={rooms} />
+          <Grid container>
+            <Grid item xs={6}>
+              <Typography
+                align="center"
+                sx={{
+                  marginTop: '10px',
+                }}
+              >
+                Rooms
+              </Typography>
+              <RoomsList
+                checked={checked}
+                setChecked={setChecked}
+                rooms={rooms}
+              />
+            </Grid>
+            <Grid item xs={6}>
+              <Typography
+                align="center"
+                sx={{
+                  marginTop: '10px',
+                }}
+              >
+                Siblings
+              </Typography>
+              <MembersList
+                checked={checkedSiblings}
+                setChecked={setCheckedSiblings}
+                users={users}
+              />
+            </Grid>
+          </Grid>
           <Button
             type="submit"
             variant="contained"
