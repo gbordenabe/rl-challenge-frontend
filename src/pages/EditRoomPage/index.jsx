@@ -3,23 +3,28 @@ import { useFormik } from 'formik'
 import { useContext, useEffect, useState } from 'react'
 import * as yup from 'yup'
 import { AuthContext } from '../../auth/context'
-import { createStudent, getRooms } from '../../client/axiosClient'
-import { RoomsList } from '../../components/RoomsList'
+import { getRoomById, getUsers, updateRoom } from '../../client/axiosClient'
+import { MembersList } from '../../components/MembersList'
+import { useParams } from 'react-router-dom'
 
-export const CreateStudentPage = () => {
+export const EditRoomPage = () => {
+  const { id } = useParams()
   const { token } = useContext(AuthContext)
   const { palette } = useTheme()
   const [checked, setChecked] = useState([])
-  const [rooms, setRooms] = useState([])
+  const [users, setUsers] = useState([])
 
   useEffect(() => {
-    getRoomsEffect()
+    getUsersAndRoomEffect()
   }, [])
 
-  const getRoomsEffect = async () => {
+  const getUsersAndRoomEffect = async () => {
     try {
-      const { rooms } = await getRooms()
-      setRooms(rooms)
+      const responses = await Promise.all([getUsers(), getRoomById(id)])
+      formik.setFieldValue('number', responses[1].room.number)
+      formik.setFieldValue('name', responses[1].room.name)
+      setChecked(responses[1].room.members.map(member => member._id))
+      setUsers(responses[0].users)
     } catch (error) {
       console.log(error)
     }
@@ -27,27 +32,23 @@ export const CreateStudentPage = () => {
 
   const formik = useFormik({
     initialValues: {
+      number: '',
       name: '',
-      email: '',
-      password: '',
-      role: 'STUDENT_ROLE',
+      members: [],
     },
     onSubmit: async values => {
       try {
-        values.rooms = [...checked]
-        await createStudent(values, token)
-        alert('Student created')
-        setChecked([])
-        formik.resetForm()
+        values.members = [...checked]
+        await updateRoom(id, values, token)
+        alert('Room updated successfully')
       } catch (error) {
         console.log(error)
-        alert('Error creating student')
+        alert('Error creating room')
       }
     },
     validationSchema: yup.object({
-      name: yup.string().required('First Name is required'),
-      email: yup.string().required('Last Name is required'),
-      password: yup.string().min(6).required('Temporal password is required'),
+      number: yup.number().required('Number is required'),
+      name: yup.string().required('Name is required'),
     }),
   })
 
@@ -59,7 +60,7 @@ export const CreateStudentPage = () => {
         align="center"
         color={palette.primary.main}
       >
-        Create Student
+        Edit Room
       </Typography>
 
       <div
@@ -73,11 +74,22 @@ export const CreateStudentPage = () => {
       >
         <form onSubmit={formik.handleSubmit}>
           <TextField
-            label="Name"
+            type="number"
+            label="Number"
             fullWidth
             sx={{
               marginBottom: '10px',
             }}
+            onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
+            value={formik.values.number}
+            name="number"
+            id="number"
+            error={Boolean(formik.errors.number)}
+          />
+          <TextField
+            label="Name"
+            fullWidth
             onChange={formik.handleChange}
             onBlur={formik.handleBlur}
             value={formik.values.name}
@@ -85,41 +97,19 @@ export const CreateStudentPage = () => {
             id="name"
             error={Boolean(formik.errors.name)}
           />
-          <TextField
-            label="Email"
-            fullWidth
-            sx={{
-              marginBottom: '10px',
-            }}
-            onChange={formik.handleChange}
-            onBlur={formik.handleBlur}
-            value={formik.values.email}
-            name="email"
-            id="email"
-            error={Boolean(formik.errors.email)}
-          />
-          <TextField
-            label="Temporal Password"
-            fullWidth
-            sx={{
-              marginBottom: '10px',
-            }}
-            onChange={formik.handleChange}
-            onBlur={formik.handleBlur}
-            value={formik.values.password}
-            name="password"
-            id="password"
-            error={Boolean(formik.errors.password)}
-          />
           <Typography
             align="center"
             sx={{
-              marginTop: '10px',
+              marginTop: '20px',
             }}
           >
-            Rooms
+            Members
           </Typography>
-          <RoomsList checked={checked} setChecked={setChecked} rooms={rooms} />
+          <MembersList
+            checked={checked}
+            setChecked={setChecked}
+            users={users}
+          />
           <Button
             type="submit"
             variant="contained"
@@ -127,11 +117,11 @@ export const CreateStudentPage = () => {
               marginTop: '20px',
               fontSize: '15px',
               backgroundColor: palette.primary.main,
-              color: palette.background.dafault,
+              color: palette.background.default,
             }}
             fullWidth
           >
-            Create
+            SAVE
           </Button>
         </form>
       </div>

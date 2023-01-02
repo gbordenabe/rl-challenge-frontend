@@ -3,11 +3,7 @@ import { useFormik } from 'formik'
 import { useContext, useEffect, useState } from 'react'
 import * as yup from 'yup'
 import { AuthContext } from '../../auth/context'
-import {
-  createRoom,
-  getUsers,
-  updateUsersRooms,
-} from '../../client/axiosClient'
+import { createRoom, getUsers } from '../../client/axiosClient'
 import { MembersList } from '../../components/MembersList'
 
 export const CreateRoomPage = () => {
@@ -38,8 +34,7 @@ export const CreateRoomPage = () => {
     onSubmit: async values => {
       try {
         values.members = [...checked]
-        const newRoom = await createRoom(values, token)
-        await updateUsersRooms(checked, newRoom._id, token)
+        await createRoom(values, token)
         alert('Room created')
         setChecked([])
         formik.resetForm()

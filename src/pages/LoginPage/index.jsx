@@ -1,4 +1,5 @@
 import { Box, Typography, useMediaQuery, useTheme } from '@mui/material'
+import { SwitchMode } from '../../components/SwitchMode'
 import { Form } from './Form'
 
 export const LoginPage = () => {
@@ -15,6 +16,7 @@ export const LoginPage = () => {
         <Typography fontWeight="bold" fontSize="32px" color="primary">
           Courses App
         </Typography>
+        <SwitchMode />
       </Box>
 
       <Box

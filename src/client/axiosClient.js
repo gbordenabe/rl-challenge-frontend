@@ -6,6 +6,7 @@ export const getRooms = async () => {
 }
 
 export const createRoom = async (room, token) => {
+  if (room.members.length === 0) delete room.members
   const { data } = await axios.post(
     `${import.meta.env.VITE_BACK_URL}api/rooms`,
     room,
@@ -31,42 +32,54 @@ export const createStudent = async (student, token) => {
   return data
 }
 
+export const updateStudent = async (id, student, token) => {
+  if (student.rooms.length === 0) delete student.rooms
+  if (student.siblings.length === 0) delete student.siblings
+  const { data } = await axios.put(
+    `${import.meta.env.VITE_BACK_URL}api/users/${id}`,
+    student,
+    {
+      headers: {
+        'x-token': token,
+      },
+    }
+  )
+  return data
+}
+
 export const getUsers = async () => {
   const { data } = await axios.get(`${import.meta.env.VITE_BACK_URL}api/users`)
   return data
 }
 
-export const updateUsersRooms = async (usersIds, roomId, token) => {
-  const requests = usersIds.map(userId =>
-    axios.put(
-      `${import.meta.env.VITE_BACK_URL}api/users/${userId}`,
-      { rooms: [roomId] },
-      {
-        headers: {
-          'x-token': token,
-        },
-      }
-    )
+export const updateRoom = async (roomId, values, token) => {
+  if (values.members.length === 0) delete values.members
+  await axios.put(
+    `${import.meta.env.VITE_BACK_URL}api/rooms/${roomId}`,
+    values,
+    {
+      headers: {
+        'x-token': token,
+      },
+    }
   )
-  await Promise.all(requests)
-}
-
-export const updateRoomsMembers = async (roomsIds, userId, token) => {
-  const requests = roomsIds.map(roomId =>
-    axios.put(
-      `${import.meta.env.VITE_BACK_URL}api/rooms/${roomId}`,
-      { members: [userId] },
-      {
-        headers: {
-          'x-token': token,
-        },
-      }
-    )
-  )
-  await Promise.all(requests)
 }
 
 export const getMembers = async roomId => {
+  const { data } = await axios.get(
+    `${import.meta.env.VITE_BACK_URL}api/rooms/${roomId}`
+  )
+  return data
+}
+
+export const getUserById = async userId => {
+  const { data } = await axios.get(
+    `${import.meta.env.VITE_BACK_URL}api/users/${userId}`
+  )
+  return data
+}
+
+export const getRoomById = async roomId => {
   const { data } = await axios.get(
     `${import.meta.env.VITE_BACK_URL}api/rooms/${roomId}`
   )

@@ -17,7 +17,7 @@ import { SwitchMode } from './SwitchMode'
 
 export const Sidebar = () => {
   const { palette } = useTheme()
-  const { logout } = useContext(AuthContext)
+  const { logout, user } = useContext(AuthContext)
   const navigate = useNavigate()
 
   const sections = [
@@ -25,21 +25,25 @@ export const Sidebar = () => {
       title: 'Room List',
       url: '/home',
       icon: <FormatListBulletedIcon style={{ color: palette.primary.main }} />,
+      teachersOnly: false,
     },
     {
       title: 'Create Room',
       url: '/create-room',
       icon: <AddBusinessIcon style={{ color: palette.primary.main }} />,
+      teachersOnly: true,
     },
     {
-      title: 'Create student',
+      title: 'Create Student',
       url: '/create-student',
       icon: <AddReactionIcon style={{ color: palette.primary.main }} />,
+      teachersOnly: true,
     },
     {
       title: 'Logout',
       url: '/login',
       icon: <LogoutIcon style={{ color: palette.primary.main }} />,
+      teachersOnly: false,
     },
   ]
 
@@ -54,21 +58,41 @@ export const Sidebar = () => {
     >
       <SwitchMode />
       <List>
-        {sections.map(section => (
-          <ListItem
-            key={section.title}
-            disablePadding
-            onClick={() => {
-              if (section.title === 'Logout') logout()
-              navigate(section.url)
-            }}
-          >
-            <ListItemButton>
-              <ListItemIcon>{section.icon}</ListItemIcon>
-              <ListItemText primary={section.title} />
-            </ListItemButton>
-          </ListItem>
-        ))}
+        {sections.map(section => {
+          if (!section.teachersOnly) {
+            return (
+              <ListItem
+                key={section.title}
+                disablePadding
+                onClick={() => {
+                  if (section.title === 'Logout') logout()
+                  navigate(section.url)
+                }}
+              >
+                <ListItemButton>
+                  <ListItemIcon>{section.icon}</ListItemIcon>
+                  <ListItemText primary={section.title} />
+                </ListItemButton>
+              </ListItem>
+            )
+          } else if (user?.role === 'TEACHER_ROLE') {
+            return (
+              <ListItem
+                key={section.title}
+                disablePadding
+                onClick={() => {
+                  if (section.title === 'Logout') logout()
+                  navigate(section.url)
+                }}
+              >
+                <ListItemButton>
+                  <ListItemIcon>{section.icon}</ListItemIcon>
+                  <ListItemText primary={section.title} />
+                </ListItemButton>
+              </ListItem>
+            )
+          }
+        })}
       </List>
     </div>
   )

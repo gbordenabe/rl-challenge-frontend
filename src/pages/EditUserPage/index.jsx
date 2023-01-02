@@ -3,14 +3,16 @@ import { useFormik } from 'formik'
 import { useContext, useEffect, useState } from 'react'
 import * as yup from 'yup'
 import { AuthContext } from '../../auth/context'
-import { createStudent, getRooms } from '../../client/axiosClient'
+import { getUserById, getRooms, updateStudent } from '../../client/axiosClient'
 import { RoomsList } from '../../components/RoomsList'
+import { useParams } from 'react-router-dom'
 
-export const CreateStudentPage = () => {
+export const EditUserPage = () => {
   const { token } = useContext(AuthContext)
   const { palette } = useTheme()
   const [checked, setChecked] = useState([])
   const [rooms, setRooms] = useState([])
+  const { id } = useParams()
 
   useEffect(() => {
     getRoomsEffect()
@@ -18,8 +20,12 @@ export const CreateStudentPage = () => {
 
   const getRoomsEffect = async () => {
     try {
-      const { rooms } = await getRooms()
-      setRooms(rooms)
+      const responses = await Promise.all([getRooms(), getUserById(id)])
+      formik.setFieldValue('name', responses[1].name)
+      formik.setFieldValue('email', responses[1].email)
+      formik.setFieldValue('role', responses[1].role)
+      setChecked(responses[1].rooms.map(room => room._id))
+      setRooms(responses[0].rooms)
     } catch (error) {
       console.log(error)
     }
@@ -29,16 +35,16 @@ export const CreateStudentPage = () => {
     initialValues: {
       name: '',
       email: '',
-      password: '',
-      role: 'STUDENT_ROLE',
+      password: '123456',
+      role: '',
     },
     onSubmit: async values => {
       try {
         values.rooms = [...checked]
-        await createStudent(values, token)
-        alert('Student created')
-        setChecked([])
-        formik.resetForm()
+        values.siblings = []
+        await updateStudent(id, values, token)
+        console.log(values)
+        alert('Student updated successfully')
       } catch (error) {
         console.log(error)
         alert('Error creating student')
@@ -59,7 +65,7 @@ export const CreateStudentPage = () => {
         align="center"
         color={palette.primary.main}
       >
-        Create Student
+        Update Student
       </Typography>
 
       <div
@@ -131,7 +137,7 @@ export const CreateStudentPage = () => {
             }}
             fullWidth
           >
-            Create
+            Save
           </Button>
         </form>
       </div>
